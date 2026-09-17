@@ -7,6 +7,8 @@
     "dashboard": "Dashboard",
     "indexer": "Indexer",
     "explorer": "File Explorer",
+    "graph": "Graph View",
+    "search": "Structural Search",
     "chat": "AI Chat",
     "branches": "Branch Management",
     "settings": "Settings"

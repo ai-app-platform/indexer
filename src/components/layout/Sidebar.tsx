@@ -9,6 +9,8 @@ import {
   Settings,
   X,
   Code2,
+  Network,
+  Filter,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { Button } from '../ui/Button';
@@ -22,6 +24,8 @@ const navItems = [
   { path: '/', icon: LayoutDashboard, labelKey: 'nav.dashboard' },
   { path: '/indexer', icon: Search, labelKey: 'nav.indexer' },
   { path: '/explorer', icon: FolderTree, labelKey: 'nav.explorer' },
+  { path: '/graph', icon: Network, labelKey: 'nav.graph' },
+  { path: '/search', icon: Filter, labelKey: 'nav.search' },
   { path: '/chat', icon: MessageSquare, labelKey: 'nav.chat' },
   { path: '/branches', icon: GitBranch, labelKey: 'nav.branches' },
   { path: '/settings', icon: Settings, labelKey: 'nav.settings' },
