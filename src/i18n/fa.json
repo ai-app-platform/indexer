@@ -1,0 +1,118 @@
+{
+  "app": {
+    "name": "ایندکسر هوشمند کد",
+    "description": "ابزار تحلیل و ایندکس پروژه‌های کد با هوش مصنوعی"
+  },
+  "nav": {
+    "dashboard": "داشبورد",
+    "indexer": "ایندکسر",
+    "explorer": "مرورگر فایل",
+    "chat": "چت هوشمند",
+    "branches": "مدیریت برنچ‌ها",
+    "settings": "تنظیمات"
+  },
+  "dashboard": {
+    "title": "داشبورد",
+    "welcome": "خوش آمدید",
+    "totalFiles": "تعداد فایل‌ها",
+    "totalFolders": "تعداد پوشه‌ها",
+    "projectStack": "استک پروژه",
+    "projectVersion": "نسخه پروژه",
+    "lastIndex": "آخرین ایندکس",
+    "quickActions": "دسترسی سریع",
+    "startIndex": "شروع ایندکس",
+    "viewExplorer": "مشاهده فایل‌ها",
+    "openChat": "چت هوشمند",
+    "recentActivity": "فعالیت‌های اخیر",
+    "noActivity": "هنوز فعالیتی ثبت نشده است"
+  },
+  "indexer": {
+    "title": "ایندکسر پروژه",
+    "repoUrl": "آدرس ریپازیتوری",
+    "repoPlaceholder": "https://github.com/user/repo",
+    "branch": "برنچ",
+    "branchPlaceholder": "انتخاب برنچ",
+    "workspace": "مسیر فضای کاری",
+    "workspacePlaceholder": "/home/user/workspace",
+    "startIndex": "شروع ایندکس",
+    "indexing": "در حال ایندکس...",
+    "completed": "ایندکس با موفقیت انجام شد",
+    "failed": "ایندکس با خطا مواجه شد",
+    "progress": "پیشرفت",
+    "step1": "کلون کردن ریپازیتوری",
+    "step2": "تحلیل ساختار پروژه",
+    "step3": "پارس کردن فایل‌ها",
+    "step4": "ایجاد مستندات .ai",
+    "step5": "تکمیل ایندکس",
+    "cancelIndex": "لغو ایندکس",
+    "retry": "تلاش مجدد"
+  },
+  "explorer": {
+    "title": "مرورگر فایل‌های .ai",
+    "searchPlaceholder": "جستجو در فایل‌ها...",
+    "viewMarkdown": "نمایش Markdown",
+    "viewJson": "نمایش JSON",
+    "copyContent": "کپی محتوا",
+    "noFileSelected": "فایلی انتخاب نشده است",
+    "selectFileHint": "یک فایل را از درخت پوشه‌ها انتخاب کنید",
+    "files": "فایل",
+    "folders": "پوشه",
+    "expandAll": "باز کردن همه",
+    "collapseAll": "بستن همه"
+  },
+  "chat": {
+    "title": "چت هوشمند",
+    "placeholder": "سوال خود را درباره پروژه بپرسید...",
+    "send": "ارسال",
+    "thinking": "در حال تحلیل...",
+    "suggestions": "پیشنهادات",
+    "suggestion1": "ساختار پروژه را توضیح بده",
+    "suggestion2": "وابستگی‌های این کلاس چیست؟",
+    "suggestion3": "متدهای اصلی این فایل کدامند؟",
+    "suggestion4": "استک تکنولوژی پروژه چیست؟"
+  },
+  "branches": {
+    "title": "مدیریت برنچ‌ها",
+    "currentBranch": "برنچ فعلی",
+    "createBranch": "ایجاد برنچ جدید",
+    "branchName": "نام برنچ",
+    "branchNamePlaceholder": "feature/new-indexer",
+    "pushChanges": "پوش تغییرات",
+    "updateBranch": "به‌روزرسانی برنچ",
+    "pushSuccess": "تغییرات با موفقیت پوش شد",
+    "pushFailed": "خطا در پوش تغییرات",
+    "noBranch": "هیچ برنچی ایجاد نشده است",
+    "createFirst": "ابتدا یک برنچ جدید ایجاد کنید",
+    "commitMessage": "پیام کامیت",
+    "commitPlaceholder": "توضیح تغییرات..."
+  },
+  "common": {
+    "save": "ذخیره",
+    "cancel": "لغو",
+    "delete": "حذف",
+    "edit": "ویرایش",
+    "close": "بستن",
+    "confirm": "تأیید",
+    "loading": "در حال بارگذاری...",
+    "error": "خطا",
+    "success": "موفق",
+    "warning": "هشدار",
+    "noData": "داده‌ای موجود نیست",
+    "retry": "تلاش مجدد",
+    "back": "بازگشت",
+    "next": "بعدی",
+    "previous": "قبلی",
+    "search": "جستجو",
+    "filter": "فیلتر",
+    "sort": "مرتب‌سازی"
+  },
+  "theme": {
+    "light": "روشن",
+    "dark": "تیره",
+    "toggle": "تغییر تم"
+  },
+  "language": {
+    "fa": "فارسی",
+    "en": "English"
+  }
+}
