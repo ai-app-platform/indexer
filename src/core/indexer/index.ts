@@ -22,3 +22,20 @@ export { IndexingPipeline } from './pipeline/IndexingPipeline';
 export type { IndexingPipelineConfig } from './pipeline/IndexingPipeline';
 
 export { CodeIndexQuery, CodeSearch } from './query/CodeSearch';
+
+// Framework Analyzers
+export { 
+  SpringAnalyzer, 
+  RESTAnalyzer, 
+  JPAAnalyzer, 
+  BuildSystemDetector,
+  FrameworkAnalyzerRegistry 
+} from './analyzers';
+export type { 
+  CompleteFrameworkAnalysis,
+  RestEndpoint,
+  JpaEntity,
+  ServiceInfo,
+  BuildSystem,
+  BuildSystemInfo 
+} from './analyzers';

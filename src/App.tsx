@@ -6,6 +6,8 @@ import { Layout } from './components/layout/Layout';
 import { Dashboard } from './pages/Dashboard';
 import { Indexer } from './pages/Indexer';
 import { FileExplorer } from './pages/FileExplorer';
+import { GraphVisualization } from './pages/GraphVisualization';
+import { StructuralSearch } from './pages/StructuralSearch';
 import { Chat } from './pages/Chat';
 import { BranchManagement } from './pages/BranchManagement';
 import { Settings } from './pages/Settings';
@@ -46,6 +48,8 @@ export default function App() {
               <Route path="/" element={<Dashboard />} />
               <Route path="/indexer" element={<Indexer />} />
               <Route path="/explorer" element={<FileExplorer />} />
+              <Route path="/graph" element={<GraphVisualization />} />
+              <Route path="/search" element={<StructuralSearch />} />
               <Route path="/chat" element={<Chat />} />
               <Route path="/branches" element={<BranchManagement />} />
               <Route path="/settings" element={<Settings />} />
