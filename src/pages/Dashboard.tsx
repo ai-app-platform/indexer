@@ -9,29 +9,58 @@ import {
   FolderTree,
   MessageSquare,
   Clock,
-  ArrowLeft,
+  Code2,
+  Network,
+  Puzzle,
+  Database,
+  CheckCircle2,
+  AlertTriangle,
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { useProjectStore } from '../stores/projectStore';
-import { mockProjectInfo, mockFileTree, mockIndexSteps, mockBranches } from '../data/mockData';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { formatDate, toPersianNumber } from '../lib/utils';
+import { MOCK_JAVA_FILES, MOCK_PROJECT_CONFIG } from '../data/mockIndexData';
+import { IndexingPipeline, InMemoryIndexStore, CodeSearch } from '../core/indexer';
+import type { IndexJob, CodebaseSnapshot, Language } from '../types/code-index';
 
 export function Dashboard() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const { projectInfo, setProjectInfo, setFileTree, setIndexSteps } = useProjectStore();
+  const [snapshot, setSnapshot] = useState<CodebaseSnapshot | null>(null);
+  const [lastJob, setLastJob] = useState<IndexJob | null>(null);
+  const [isIndexed, setIsIndexed] = useState(false);
 
   useEffect(() => {
-    if (!projectInfo) {
-      setProjectInfo(mockProjectInfo);
-      setFileTree(mockFileTree);
-      setIndexSteps(mockIndexSteps);
-    }
-  }, [projectInfo, setProjectInfo, setFileTree, setIndexSteps]);
+    loadIndexData();
+  }, []);
 
-  const info = projectInfo || mockProjectInfo;
+  const loadIndexData = async () => {
+    const store = new InMemoryIndexStore();
+    const pipeline = new IndexingPipeline(MOCK_PROJECT_CONFIG, store);
+    
+    // Check if already indexed
+    const existingIndex = await store.getIndex(MOCK_PROJECT_CONFIG.projectId, MOCK_PROJECT_CONFIG.branch);
+    if (existingIndex) {
+      const snap = await store.getSnapshot(MOCK_PROJECT_CONFIG.projectId, MOCK_PROJECT_CONFIG.branch);
+      setSnapshot(snap);
+      setIsIndexed(true);
+      const jobs = await store.getJobsByProject(MOCK_PROJECT_CONFIG.projectId);
+      if (jobs.length > 0) setLastJob(jobs[jobs.length - 1]);
+    }
+  };
+
+  const languageLabels: Record<string, string> = {
+    JAVA: 'Java',
+    KOTLIN: 'Kotlin',
+    TYPESCRIPT: 'TypeScript',
+    JAVASCRIPT: 'JavaScript',
+    PYTHON: 'Python',
+    GO: 'Go',
+    RUST: 'Rust',
+    UNKNOWN: 'Unknown',
+  };
 
   return (
     <div className="space-y-6">
@@ -42,7 +71,7 @@ export function Dashboard() {
             {t('dashboard.title')}
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            {t('dashboard.welcome')} — {info.name}
+            {t('dashboard.welcome')} — dental-lab-backend
           </p>
         </div>
         <Button variant="primary" onClick={() => navigate('/indexer')}>
@@ -56,38 +85,102 @@ export function Dashboard() {
         <StatCard
           icon={<FileText className="h-5 w-5 text-teal-600 dark:text-teal-400" />}
           label={t('dashboard.totalFiles')}
-          value={toPersianNumber(info.totalFiles)}
+          value={toPersianNumber(snapshot?.statistics.files || 0)}
         />
         <StatCard
-          icon={<FolderOpen className="h-5 w-5 text-blue-600 dark:text-blue-400" />}
-          label={t('dashboard.totalFolders')}
-          value={toPersianNumber(info.totalFolders)}
+          icon={<Puzzle className="h-5 w-5 text-blue-600 dark:text-blue-400" />}
+          label="Symbols"
+          value={toPersianNumber(snapshot?.statistics.symbols || 0)}
         />
         <StatCard
-          icon={<Layers className="h-5 w-5 text-purple-600 dark:text-purple-400" />}
-          label={t('dashboard.projectStack')}
-          value="Java 21"
+          icon={<Network className="h-5 w-5 text-purple-600 dark:text-purple-400" />}
+          label="Relationships"
+          value={toPersianNumber(snapshot?.statistics.relationships || 0)}
         />
         <StatCard
-          icon={<GitBranch className="h-5 w-5 text-amber-600 dark:text-amber-400" />}
-          label={t('dashboard.projectVersion')}
-          value={info.version}
+          icon={<Database className="h-5 w-5 text-amber-600 dark:text-amber-400" />}
+          label="Chunks"
+          value={toPersianNumber(snapshot?.statistics.chunks || 0)}
         />
       </div>
 
-      {/* Stack Badges */}
-      <div className="card p-5">
-        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
-          {t('dashboard.projectStack')}
-        </h3>
-        <div className="flex flex-wrap gap-2">
-          {info.stack.map((tech) => (
-            <Badge key={tech} variant="info">
-              {tech}
-            </Badge>
-          ))}
+      {/* Language Distribution */}
+      {snapshot && Object.keys(snapshot.languages).length > 0 && (
+        <div className="card p-5">
+          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
+            Language Distribution
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {Object.entries(snapshot.languages).map(([lang, count]) => (
+              <Badge key={lang} variant="info">
+                {languageLabels[lang] || lang}: {toPersianNumber(count)}
+              </Badge>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Index Status */}
+      {lastJob && (
+        <div className={`card p-5 ${
+          lastJob.status === 'COMPLETED' 
+            ? 'border-emerald-200 dark:border-emerald-800' 
+            : lastJob.status === 'COMPLETED_WITH_WARNINGS'
+            ? 'border-amber-200 dark:border-amber-800'
+            : 'border-red-200 dark:border-red-800'
+        }`}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              {lastJob.status === 'COMPLETED' ? (
+                <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+              ) : lastJob.status === 'COMPLETED_WITH_WARNINGS' ? (
+                <AlertTriangle className="h-5 w-5 text-amber-500" />
+              ) : (
+                <AlertTriangle className="h-5 w-5 text-red-500" />
+              )}
+              <div>
+                <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                  Last Index: {lastJob.status}
+                </p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Mode: {lastJob.mode} • Parser: {lastJob.parserVersion} • Index v{lastJob.indexVersion}
+                </p>
+              </div>
+            </div>
+            <div className="text-xs text-slate-500 dark:text-slate-400">
+              {lastJob.completedAt && formatDate(lastJob.completedAt, i18n.language)}
+            </div>
+          </div>
+          
+          {/* Progress details */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+            <div className="text-center">
+              <p className="text-lg font-bold text-slate-900 dark:text-slate-100">
+                {toPersianNumber(lastJob.progress.filesParsed)}
+              </p>
+              <p className="text-xs text-slate-500">Files Parsed</p>
+            </div>
+            <div className="text-center">
+              <p className="text-lg font-bold text-slate-900 dark:text-slate-100">
+                {toPersianNumber(lastJob.progress.symbolsExtracted)}
+              </p>
+              <p className="text-xs text-slate-500">Symbols</p>
+            </div>
+            <div className="text-center">
+              <p className="text-lg font-bold text-slate-900 dark:text-slate-100">
+                {toPersianNumber(lastJob.progress.relationshipsExtracted)}
+              </p>
+              <p className="text-xs text-slate-500">Relations</p>
+            </div>
+            <div className="text-center">
+              <p className="text-lg font-bold text-red-600 dark:text-red-400">
+                {toPersianNumber(lastJob.errors.length)}
+              </p>
+              <p className="text-xs text-slate-500">Errors</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Quick Actions */}
       <div className="card p-5">
@@ -113,40 +206,25 @@ export function Dashboard() {
         </div>
       </div>
 
-      {/* Recent Activity */}
+      {/* Architecture Info */}
       <div className="card p-5">
-        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-4">
-          {t('dashboard.recentActivity')}
+        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
+          Code Indexer Architecture
         </h3>
-        <div className="space-y-3">
-          {mockBranches.map((branch) => (
-            <div
-              key={branch.id}
-              className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
-            >
-              <div className="flex items-center gap-3">
-                <GitBranch className="h-4 w-4 text-slate-400" />
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                  {branch.name}
-                </span>
-                {branch.isCurrent && <Badge variant="success">Active</Badge>}
-              </div>
-              <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-                <Clock className="h-3 w-3" />
-                <span>{formatDate(branch.lastUpdated, i18n.language)}</span>
-              </div>
-            </div>
-          ))}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+          <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800">
+            <p className="font-semibold text-slate-700 dark:text-slate-300 mb-1">Phase 1: Discovery</p>
+            <p className="text-slate-500 dark:text-slate-400">File walking, language detection, filtering</p>
+          </div>
+          <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800">
+            <p className="font-semibold text-slate-700 dark:text-slate-300 mb-1">Phase 2: Parsing</p>
+            <p className="text-slate-500 dark:text-slate-400">AST extraction, symbol extraction, references</p>
+          </div>
+          <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800">
+            <p className="font-semibold text-slate-700 dark:text-slate-300 mb-1">Phase 3: Analysis</p>
+            <p className="text-slate-500 dark:text-slate-400">Dependencies, call graph, chunking</p>
+          </div>
         </div>
-      </div>
-
-      {/* Last Index Info */}
-      <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-        <Clock className="h-3 w-3" />
-        <span>
-          {t('dashboard.lastIndex')}: {formatDate(info.lastIndex, i18n.language)}
-        </span>
-        <ArrowLeft className="h-3 w-3 rotate-180" />
       </div>
     </div>
   );
